@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="theme-color" content="#000000">
+  <!--
+    manifest.json provides metadata used when your web app is added to the
+    homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+  -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+  <!--
+    Notice the use of %PUBLIC_URL% in the tags above.
+    It will be replaced with the URL of the `public` folder during the build.
+    Only files inside the `public` folder can be referenced from the HTML.
+
+    Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+    work correctly both with client-side routing and a non-root public URL.
+    Learn how to configure a non-root public URL by running `npm run build`.
+  -->
+  <title>React App</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue" async="false"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css" media="all">
+<script src="https://unpkg.com/tabulator-tables@4.6.3/dist/js/tabulator.min.js" async="false"></script>
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/tabulator-tables@4.6.3/dist/css/tabulator.min.css" media="all">
+</head>
+<body>
+  <div id="app" class="container">
+  <div class="columns">
+    <div v-for="owner in allOwners" class="column">
+      <a
+        class="button is-small"
+        @click="currentOwner=owner.id"
+        v-bind:class="{'is-primary' : owner.id === currentOwner}"
+      >
+        {{owner.name}} ({{owner.id}})
+      </a>
+    </div>
+  </div>
+
+  <h3 class="title is-5">Enter the filter criteria</h3>
+
+  <select v-model="fieldSelected">
+    <option v-for="option in fields" v-bind:value="option">
+      {{ option.label }}
+    </option>
+  </select>
+
+  <select v-model="operatorSelected" @change="onOperatorChange($event)">
+    <option v-for="option in operators" v-bind:value="option.value">
+      {{ option.label }}
+    </option>
+  </select>
+
+  <input v-model="value1" v-if="isValue1Visible" placeholder="Enter Value" />
+  <input v-model="value2" v-if="isValue2Visible" placeholder="Enter Value" />
+
+  <button v-bind:disabled="addFilterButtonDisabled" v-on:click="addFilter">
+    Add Filter
+  </button>
+
+  <!-- Quick Values-->
+  <div style="margin-top: 4px;background-color:whitesmoke ">
+    <span v-show="quickValues">Quick Values:</span>
+    <span v-for="q in quickValues">
+      <span style="margin-left: 4px">
+        <a href="#" @click.prevent="value1 = q">{{q}}</a>
+      </span>
+    </span>
+  </div>
+
+  <!-- Display current selected filters-->
+  <h3 class="title is-5">
+    Current Criteria: {{filterList.length}}
+  </h3>
+  <ul>
+    <li v-for="filter in filterList">
+      <input
+        @change="toggleFilterActive(filter.field)"
+        :checked="filter.isActive"
+        type="checkbox"
+      />
+      {{filter.field}}
+      <span v-if="filter.value1 != ''">
+        {{filter.operator }} {{filter.value1}}
+      </span>
+      <span v-if="filter.value2 != ''"> and {{filter.value2}} </span>
+      <span v-if="filter.value1 == '' && filter.value2==''"
+        >{{filter.operator}}</span
+      >
+      <a href="#" @click="deleteFilter(filter.field,$event)">(remove) </a>
+    </li>
+  </ul>
+
+  <button
+    class="button"
+    :disabled="filterList.length == 0"
+    v-on:click="removeFilters"
+  >
+    Remove All Filters
+  </button>
+  <button class="button" v-on:click="search">
+    Search
+  </button>
+</div>
+
+<div id="example-table"></div>
+
+  <!--
+    This HTML file is a template.
+    If you open it directly in the browser, you will see an empty page.
+
+    You can add webfonts, meta tags, or analytics to this file.
+    The build step will place the bundled scripts into the <body> tag.
+
+    To begin the development, run `npm start` or `yarn start`.
+    To create a production bundle, use `npm run build` or `yarn build`.
+  -->
+</body>
+</html>
